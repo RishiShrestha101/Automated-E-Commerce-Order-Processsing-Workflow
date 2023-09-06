@@ -32,8 +32,9 @@ def ecommeres():
         return mock_data
 
     @task
-    def check_status(product, quantity, **kwargs):
-        name = product
+    def check_status(mock_data, **kwargs):
+        name = mock_data['product']
+        quantity = mock_data['quantity']
         hook = SqliteHook(sqlite_conn_id="inventory")
         query = f"SELECT quantity from inventory WHERE book_title = '{name}'"
         available_quantity = hook.get_pandas_df(query).iloc[0][0]
@@ -56,7 +57,7 @@ def ecommeres():
 
     # Define the main tasks
     mock_data = get_mock()
-    status = check_status(mock_data['product'], mock_data['quantity'])
+    status = check_status(mock_data)
     ship = shipping(status)
 
     # Set task dependencies
